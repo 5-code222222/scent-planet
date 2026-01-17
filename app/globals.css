@@ -1,0 +1,28 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  background-color: black;
+  color: white;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  background-color: black;
+  color: white !important;
+  font-family: sans-serif;
+  overflow: hidden;
+  height: 100vh;
+  width: 100vw;
+}
+
+input,
+button {
+  color: white !important;
+}
+
+::placeholder {
+  color: rgba(255, 255, 255, 0.5) !important;
+}
