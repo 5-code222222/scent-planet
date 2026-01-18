@@ -54,7 +54,7 @@ export const InfoPanel: React.FC = () => {
                         </div>
 
                         {SCENT_CATEGORIES.map((cat: ScentCategory) => {
-                            const value = currentPlanet.elements[cat];
+                            const value = currentPlanet.elements[cat] || 0;
                             if (value <= 0) return null;
 
                             return (

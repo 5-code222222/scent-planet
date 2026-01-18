@@ -1,16 +1,17 @@
 export type ScentCategory =
-  | 'Floral'
-  | 'Fruity'
   | 'Citrus'
+  | 'Fruity'
+  | 'Floral'
+  | 'Green'
+  | 'Tea'
   | 'Marine'
   | 'Herbal'
-  | 'Woody'
   | 'Spice'
+  | 'Woody'
+  | 'Leather'
   | 'Gourmand'
-  | 'Chypre'
-  | 'Fougere'
-  | 'Oriental'
-  | 'Musk'
+  | 'Amber'
+  | 'Musky'
   | 'Smoky';
 
 export interface ScentProfile {

@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import { GoogleGenerativeAI } from '@google/generative-ai';
 import { SCENT_CATEGORIES } from '@/lib/constants';
+import { normalizeScentNode } from '@/lib/scent-utils';
 
 // Initialize Gemini client
 const apiKey = process.env.GEMINI_API_KEY || process.env.GOOGLE_API_KEY;
@@ -48,23 +49,36 @@ export async function POST(req: Request) {
                         あなたはプロの調香師です。以下の手順で香水「${perfumeName}」を分析してください。
 
                         1. まず、Google検索機能を使用して、この香水の「公式なノート構成（トップ、ミドル、ベース）」や「主要な香料」を正確に調べてください。推測は禁止です。
-                        2. 検索結果に基づき、その香りを以下の13のカテゴリーに分解し、パーセンテージを割り当ててください：
+                        2. 検索結果に基づき、その香りを以下の14のカテゴリーに分解し、パーセンテージを割り当ててください：
                         ${SCENT_CATEGORIES.join(', ')}.
 
                         以下のJSONオブジェクト形式のみを返してください:
                         {
                             "name": "${perfumeName}",
                             "description": "検索された情報に基づく、この香水の正確な特徴と印象（日本語で最大80文字）。",
-                            "elements": { "Floral": 0-100, "Fruity": 0-100, "Citrus": 0-100, "Marine": 0-100, "Herbal": 0-100, "Woody": 0-100, "Spice": 0-100, "Gourmand": 0-100, "Chypre": 0-100, "Fougere": 0-100, "Oriental": 0-100, "Musk": 0-100, "Smoky": 0-100 }
+                            "elements": { "Citrus": 0-100, "Fruity": 0-100, "Floral": 0-100, "Green": 0-100, "Tea": 0-100, "Marine": 0-100, "Herbal": 0-100, "Spice": 0-100, "Woody": 0-100, "Leather": 0-100, "Gourmand": 0-100, "Amber": 0-100, "Musky": 0-100, "Smoky": 0-100 }
                         }
                         
                         * 合計が必ず100になるように調整してください。
-                        * JSONの文字列のみを返してください。Markdownフォーマット（\`\`\`jsonなど）は使用しないでください。
+                        * JSONの文字列のみを返してください。Markdown形式などは使用しないでください。
                     `;
 
                     const result = await model.generateContent(prompt);
                     const responseText = result.response.text().replace(/```json/g, '').replace(/```/g, '').trim();
-                    resultData = JSON.parse(responseText);
+                    const rawData = JSON.parse(responseText);
+
+                    // Normalize categories
+                    const normalizedElements: any = {};
+                    Object.entries(rawData.elements || {}).forEach(([key, val]) => {
+                        const normalizedKey = normalizeScentNode(key);
+                        normalizedElements[normalizedKey] = (normalizedElements[normalizedKey] || 0) + (val as number);
+                    });
+
+                    resultData = {
+                        ...rawData,
+                        elements: normalizedElements
+                    };
+
                     success = true;
                     usedModel = modelName;
                     console.log(`Success with ${modelName}`);
@@ -103,11 +117,11 @@ export async function POST(req: Request) {
 function generateMockScent(name: string, errorMessage?: string) {
     const mockElements: any = {};
     SCENT_CATEGORIES.forEach(cat => {
-        mockElements[cat] = Math.floor(Math.random() * 20);
+        mockElements[cat] = Math.floor(Math.random() * 10);
     });
     // Pick one dominant random category
     const dominant = SCENT_CATEGORIES[Math.floor(Math.random() * SCENT_CATEGORIES.length)];
-    mockElements[dominant] = 60;
+    mockElements[dominant] = 50;
 
     return {
         name: `${name} (Simulated)`,

@@ -17,23 +17,24 @@ varying vec3 vPosition;
 
 uniform float uTime;
 uniform float uComplexity;
-uniform float uWeights[13];
+uniform float uWeights[14];
 
-// 13 fixed directions for the categories
-const vec3 directions[13] = vec3[](
-    vec3(1.0, 0.0, 0.0),   // Floral
-    vec3(-1.0, 0.0, 0.0),  // Fruity
-    vec3(0.0, 1.0, 0.0),   // Citrus
-    vec3(0.0, -1.0, 0.0),  // Marine
-    vec3(0.0, 0.0, 1.0),   // Herbal
-    vec3(0.0, 0.0, -1.0),  // Woody
-    vec3(0.577, 0.577, 0.577),  // Spice
-    vec3(-0.577, 0.577, 0.577), // Gourmand
-    vec3(0.577, -0.577, 0.577), // Chypre
-    vec3(0.577, 0.577, -0.577), // Fougere
-    vec3(-0.577, -0.577, 0.577),// Oriental
-    vec3(-0.577, 0.577, -0.577),// Musk
-    vec3(0.577, -0.577, -0.577) // Smoky
+// 14 fixed directions for the categories (axes + corners)
+const vec3 directions[14] = vec3[](
+    vec3(0.0, 1.0, 0.0),    // Up
+    vec3(1.0, 0.0, 0.0),    // Right
+    vec3(0.0, 0.0, 1.0),    // Forward
+    vec3(0.0, -1.0, 0.0),   // Down
+    vec3(-1.0, 0.0, 0.0),   // Left
+    vec3(0.0, 0.0, -1.0),   // Backward
+    vec3(0.577, 0.577, 0.577),   // C1
+    vec3(-0.577, 0.577, 0.577),  // C2
+    vec3(0.577, -0.577, 0.577),  // C3
+    vec3(0.577, 0.577, -0.577),  // C4
+    vec3(-0.577, -0.577, 0.577), // C5
+    vec3(-0.577, 0.577, -0.577), // C6
+    vec3(0.577, -0.577, -0.577), // C7
+    vec3(-0.577, -0.577, -0.577) // C8
 );
 
 // Simplex Noise (Minimal)
@@ -89,7 +90,7 @@ void main() {
 
   float totalDisplacement = 0.0;
   
-  for (int i = 0; i < 13; i++) {
+  for (int i = 0; i < 14; i++) {
       float weight = uWeights[i];
       if (weight > 1.0) {
           float alignment = dot(normalize(position), directions[i]);
@@ -116,20 +117,20 @@ varying vec3 vNormal;
 varying vec3 vPosition;
 
 uniform float uTime;
-uniform vec3 uColors[13];
-uniform float uWeights[13];
+uniform vec3 uColors[14];
+uniform float uWeights[14];
 
-const vec3 directions[13] = vec3[](
-    vec3(1.0, 0.0, 0.0), vec3(-1.0, 0.0, 0.0), vec3(0.0, 1.0, 0.0), vec3(0.0, -1.0, 0.0),
-    vec3(0.0, 0.0, 1.0), vec3(0.0, 0.0, -1.0), vec3(0.577, 0.577, 0.577), vec3(-0.577, 0.577, 0.577),
+const vec3 directions[14] = vec3[](
+    vec3(0.0, 1.0, 0.0), vec3(1.0, 0.0, 0.0), vec3(0.0, 0.0, 1.0), vec3(0.0, -1.0, 0.0),
+    vec3(-1.0, 0.0, 0.0), vec3(0.0, 0.0, -1.0), vec3(0.577, 0.577, 0.577), vec3(-0.577, 0.577, 0.577),
     vec3(0.577, -0.577, 0.577), vec3(0.577, 0.577, -0.577), vec3(-0.577, -0.577, 0.577),
-    vec3(-0.577, 0.577, -0.577), vec3(0.577, -0.577, -0.577)
+    vec3(-0.577, 0.577, -0.577), vec3(0.577, -0.577, -0.577), vec3(-0.577, -0.577, -0.577)
 );
 
 void main() {
   vec3 averageColor = vec3(0.0);
   float totalWeightSum = 0.0;
-  for(int i = 0; i < 13; i++) {
+  for(int i = 0; i < 14; i++) {
      averageColor += uColors[i] * uWeights[i];
      totalWeightSum += uWeights[i];
   }
@@ -139,7 +140,7 @@ void main() {
 
   vec3 finalColor = averageColor;
 
-  for(int i = 0; i < 13; i++) {
+  for(int i = 0; i < 14; i++) {
     float weight = uWeights[i];
     if (weight < 1.0) continue;
 
@@ -170,8 +171,8 @@ void main() {
 const PlanetMaterial = shaderMaterial(
     {
         uTime: 0,
-        uColors: new Array(13).fill(new THREE.Vector3(1, 1, 1)),
-        uWeights: new Array(13).fill(0),
+        uColors: new Array(14).fill(new THREE.Vector3(1, 1, 1)),
+        uWeights: new Array(14).fill(0),
         uComplexity: 0,
     },
     planetVertexShader,
@@ -204,8 +205,8 @@ const Planet: React.FC<PlanetProps> = ({ scentProfile }) => {
     });
 
     const { colors, weights, complexity } = useMemo(() => {
-        const colorsArr = new Array(13).fill(new THREE.Vector3(0, 0, 0));
-        const weightsArr = new Array(13).fill(0);
+        const colorsArr = new Array(14).fill(new THREE.Vector3(0, 0, 0));
+        const weightsArr = new Array(14).fill(0);
         let complexityVal = 0;
 
         if (scentProfile) {
