@@ -9,7 +9,7 @@ const config: Config = {
     theme: {
         extend: {
             fontFamily: {
-                sans: ["var(--font-rounded)"], // Override default sans
+                sans: ["var(--font-jost)", "var(--font-zen)", "sans-serif"], // Jost for EN, Zen Kaku for JP
             },
             colors: {
                 background: "var(--background)",

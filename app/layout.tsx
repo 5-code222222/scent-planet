@@ -1,11 +1,17 @@
 import type { Metadata } from "next";
-import { M_PLUS_Rounded_1c } from "next/font/google"; // Softer, rounded Japanese font
+import { Zen_Kaku_Gothic_New, Jost } from "next/font/google"; // New fonts: Zen Kaku Gothic New (JP) + Jost (EN)
 import "./globals.css";
 
-const roundedFont = M_PLUS_Rounded_1c({
-  weight: ["400", "700"],
+const zenFont = Zen_Kaku_Gothic_New({
+  weight: ["300", "400", "500", "700"],
   subsets: ["latin"],
-  variable: "--font-rounded",
+  variable: "--font-zen",
+});
+
+const jostFont = Jost({
+  weight: ["400", "500", "700"],
+  subsets: ["latin"],
+  variable: "--font-jost",
 });
 
 export const metadata: Metadata = {
@@ -21,7 +27,7 @@ export default function RootLayout({
   return (
     <html lang="ja">
       <body
-        className={`${roundedFont.variable} font-sans antialiased`}
+        className={`${zenFont.variable} ${jostFont.variable} font-sans antialiased`}
       >
         {children}
       </body>

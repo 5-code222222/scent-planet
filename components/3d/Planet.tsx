@@ -251,6 +251,7 @@ const Planet: React.FC<PlanetProps> = ({ scentProfile }) => {
                 if (weight < 15) return null;
 
                 const vec = SCENT_VECTORS[cat];
+                const color = SCENT_COLORS[cat];
                 const distance = 2.2 + (weight / 30.0) * 1.5;
                 const position: [number, number, number] = [
                     vec[0] * distance,
@@ -258,15 +259,61 @@ const Planet: React.FC<PlanetProps> = ({ scentProfile }) => {
                     vec[2] * distance
                 ];
 
+                // Scent-specific effect classes
+                let effectClass = "";
+                if (['Floral', 'Musk', 'Gourmand'].includes(cat)) effectClass = "animate-pulse shadow-[0_0_20px_rgba(255,255,255,0.3)]";
+                if (['Citrus', 'Fruity', 'Marine'].includes(cat)) effectClass = "animate-bounce-subtle";
+                if (['Spice', 'Smoky'].includes(cat)) effectClass = "animate-waver";
+
                 return (
                     <Html key={cat} position={position} center distanceFactor={10}>
-                        <div className="flex flex-col items-center pointer-events-none select-none">
-                            <span className="text-white font-bold text-xs bg-black/50 px-2 py-1 rounded backdrop-blur-md border border-white/20 whitespace-nowrap">
-                                {SCENT_CATEGORY_LABELS_JP[cat]}
-                            </span>
-                            <span className="text-white/80 text-[10px] mt-0.5 font-mono">
-                                {weight}%
-                            </span>
+                        <div className="flex flex-col items-center pointer-events-none select-none group">
+                            {/* Stylish Label */}
+                            <div className={`relative flex flex-col items-center p-2 transition-all duration-500`}>
+                                {/* Scent-specific animated background/glow */}
+                                <div
+                                    className={`absolute inset-0 rounded-full blur-xl opacity-20 group-hover:opacity-40 transition-opacity ${effectClass}`}
+                                    style={{ backgroundColor: color }}
+                                ></div>
+
+                                <span
+                                    className="text-white font-bold text-sm tracking-widest whitespace-nowrap drop-shadow-[0_0_5px_rgba(0,0,0,0.8)]"
+                                    style={{
+                                        fontFamily: 'var(--font-jost)',
+                                        textShadow: `0 0 10px ${color}, 0 0 20px ${color}44`
+                                    }}
+                                >
+                                    {SCENT_CATEGORY_LABELS_JP[cat].toUpperCase()}
+                                </span>
+                                <span
+                                    className="text-cyan-400 font-bold text-[10px] mt-0.5 tabular-nums opacity-80"
+                                    style={{ fontFamily: 'var(--font-jost)' }}
+                                >
+                                    {weight}<span className="text-[8px] ml-0.5">%</span>
+                                </span>
+
+                                {/* SF UI Decor Accents */}
+                                <div className="absolute top-0 left-0 w-1 h-1 border-t border-l border-white/40 group-hover:border-white/80 transition-colors"></div>
+                                <div className="absolute bottom-0 right-0 w-1 h-1 border-b border-r border-white/40 group-hover:border-white/80 transition-colors"></div>
+                            </div>
+
+                            {/* Custom CSS for animations if not in tailwind */}
+                            <style jsx>{`
+                                @keyframes bounce-subtle {
+                                    0%, 100% { transform: translateY(0); }
+                                    50% { transform: translateY(-4px); }
+                                }
+                                .animate-bounce-subtle {
+                                    animation: bounce-subtle 2s ease-in-out infinite;
+                                }
+                                @keyframes waver {
+                                    0%, 100% { transform: skew(0deg) scale(1); filter: blur(0px); }
+                                    50% { transform: skew(2deg) scale(1.05); filter: blur(1px); }
+                                }
+                                .animate-waver {
+                                    animation: waver 3s ease-in-out infinite;
+                                }
+                            `}</style>
                         </div>
                     </Html>
                 );
